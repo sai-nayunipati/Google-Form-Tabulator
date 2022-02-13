@@ -1,0 +1,65 @@
+/*
+This could easily be optimized. I repeatedly search for the same values instead of storing it
+once as a variable. That said, it's sufficiently fast (works in seconds), and optimizing it
+isn't intellectually stimulating. Maybe I'll take a look later on.
+*/
+function formatServiceHours() 
+{
+  // Fill out all the constants as needed before running the code
+  // Remember, the count starts with zero
+  var emailColumnA = 1;
+  var activityColumn = 5;
+  var hoursColumn = 6;
+
+  var emailColumnB = 0;
+  var firstDescriptionIndex = 3;
+
+  // Get references to necessary sheets
+  var sheetA = SpreadsheetApp.getActive().getSheetByName('Form Responses');
+  var rangeA = sheetA.getDataRange();
+  var sheetB = SpreadsheetApp.getActive().getSheetByName('Formatted Responses');
+  var rangeB = sheetB.getDataRange();
+
+  // Iterate through all the emails
+  var backgrounds = rangeA.getBackgrounds();
+  for (var j = 0; j < rangeA.getNumRows(); j++)
+  {
+    // If one highlighted in yellow is found
+    if (backgrounds[j][emailColumnA] == "#ffff00")
+    {
+      // Grab all the relevant data
+      var studentEmail = sheetA.getRange(j+1, emailColumnA+1).getValue();
+      var activityDescription = sheetA.getRange(j+1, activityColumn+1).getValue();
+      var hoursServed = sheetA.getRange(j+1, hoursColumn+1).getValue();
+
+      var foundRow = false;
+
+      // Loop through sheet B's email column
+      for (var i = 1; i <= rangeB.getNumRows(); i++)
+      {
+        // If the relevant email is found
+        if (sheetB.getRange(i, emailColumnB+1).getValue().toLowerCase() == studentEmail.toLowerCase())
+        {
+          // Find index of an empty description cell (and assume hours are n + 1)
+          var columnNum = firstDescriptionIndex;
+          while (sheetB.getRange(i, columnNum+1).getValue() != "")
+          {
+            columnNum++
+          }
+
+          // Fill in the relevant data
+          sheetB.getRange(i, columnNum+1).setValue(activityDescription);
+          sheetB.getRange(i, columnNum+2).setValue(hoursServed)
+
+          foundRow = true
+        }
+      }
+
+      // Alert me if a respondent doesn't appear on form B
+      if (foundRow == false)
+      {
+        console.log("Couldn't find spot for:" + studentEmail);
+      }
+    }
+  }
+}
