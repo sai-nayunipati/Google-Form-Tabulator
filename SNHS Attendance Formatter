@@ -1,0 +1,59 @@
+function formatAttendance() 
+{
+    // Fill out all the constants as needed before running the code
+    // I specify "index" because I assume the count starts with zero
+    var emailIndexA = 1;
+
+    var emailIndexB = 0;
+    var meetingIndexB = 17;
+
+    // Get references to the necessary sheets
+    var sheetA = SpreadsheetApp.getActive().getSheetByName('Form Responses');
+    var rangeA = sheetA.getDataRange();
+    var valuesA = rangeA.getValues();
+    var sheetB = SpreadsheetApp.getActive().getSheetByName('Formatted Responses');
+    var rangeB = sheetB.getDataRange();
+    var valuesB = rangeB.getValues();
+
+    // Iterate through all emails
+    var backgrounds = rangeA.getBackgrounds();
+    for (var j = 0; j < rangeA.getNumRows(); j++)
+    {
+      // If we find one highlighted yellow
+      if (backgrounds[j][emailIndexA] == '#ffff00')
+      {
+        // Grab name
+        var studentEmail = valuesA[j][emailIndexA];
+
+        // Find student's row in form B
+        var foundRow = false;
+        for (var i = 0; i < rangeB.getNumRows(); i++)
+        {
+          if(valuesB[i][emailIndexB].toLowerCase() == studentEmail.toLowerCase())
+          {
+            foundRow = true;
+            sheetB.getRange(i + 1, meetingIndexB + 1).setValue('1'); // offset of '1' because getRange assumes indexes start at [1,1]
+          }
+        }
+
+        // Alert me if for some reason the respondent wasn't on the formatted sheet
+        if (!foundRow)
+        {
+          // console.log("Couldn't find the row for:" + studentEmail);
+        }
+      }
+    }
+
+    var valuesB = SpreadsheetApp.getActive().getSheetByName('Formatted Responses').getDataRange().getValues();
+
+    // If someone hasn't just been marked present, we assume they are absent unexcused
+    for (var i = 0; i < rangeB.getNumRows(); i++)
+    {
+      // I'm skeptical this will work, will the reference automatically update?
+      if (valuesB[i][meetingIndexB] == '')
+      {
+        sheetB.getRange(i + 1, meetingIndexB + 3).setValue('1'); // Additional offset of '1' because getRange assumes the index starts at [1,1]
+        console.log (valuesB[i][emailIndexB] + " has been marked absent unexcused");
+      }
+    }
+}
