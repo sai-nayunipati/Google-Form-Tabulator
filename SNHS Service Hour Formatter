@@ -1,8 +1,3 @@
-/*
-This could easily be optimized. I repeatedly search for the same values instead of storing it
-once as a variable. That said, it's sufficiently fast (works in seconds), and optimizing it
-isn't intellectually stimulating. Maybe I'll take a look later on.
-*/
 function formatServiceHours() 
 {
   // Fill out all the constants as needed before running the code
