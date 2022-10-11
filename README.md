@@ -1,4 +1,4 @@
-# SNHS Google Form Tabulator
+# Google Form Tabulator
 
 Tabulates responses to an attendance Google Form.
 
